@@ -4,6 +4,10 @@ typedef struct{
     int ps3_serial;
 }PS3_controllertable;
 
+typedef struct{
+    
+}Pac_controller;
+
 js_event EVENT;
 
 PS3_HANDLE ConttrollerOpen(const char const* dev)
@@ -23,7 +27,7 @@ PS3_HANDLE ConttrollerOpen(const char const* dev)
     return _table; 
 }
 
-ssize_t ControllerRead(PS3_HANDLE handle, bool* flag)
+ssize_t ControllerRead(PS3_HANDLE handle)
 {
     PS3_controllertable* _table = handle;
     uint8_t count = 0;
@@ -37,9 +41,6 @@ ssize_t ControllerRead(PS3_HANDLE handle, bool* flag)
             case JS_EVENT_BUTTON:
             {
                 printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
-                i++;
-                if(i > 3)
-                    *flag = true; 
             }
             break;
             case JS_EVENT_AXIS:

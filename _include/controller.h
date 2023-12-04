@@ -8,8 +8,10 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <linux/joystick.h>
+#include <math.h>
 
 #ifndef PS3CONTROLLER_H
+#define PS3CONTROLLER_H
 
 typedef void* PS3_HANDLE;
 typedef struct js_event js_event;
@@ -17,7 +19,7 @@ typedef struct js_event js_event;
 /**
  * @brief 
  * 
- * @param dev Only use /dev/input/js*(if use one controller, * set to 0)
+ * @param [in] dev Only use /dev/input/js*(if use one controller, * set to 0)
  * @return PS3_HANDLE 
  */
 PS3_HANDLE ConttrollerOpen(const char const* dev);
@@ -25,10 +27,10 @@ PS3_HANDLE ConttrollerOpen(const char const* dev);
 /**
  * @brief 
  * 
- * @param handle Please use what is made by ControllerOpen();
+ * @param [in] handle Please use what is made by ControllerOpen();
  * @return ssize_t 
  */
-ssize_t ControllerRead(PS3_HANDLE handle, bool* flag);
+ssize_t ControllerRead(PS3_HANDLE handle);
 
 /**
  * @brief 
