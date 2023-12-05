@@ -5,7 +5,10 @@ typedef struct{
 }PS3_controllertable;
 
 typedef struct{
-    
+    uint8_t button;
+    uint16_t trigger_value;
+    uint16_t stick_value;
+    uint16_t stick_angle;
 }Pac_controller;
 
 js_event EVENT;
@@ -33,30 +36,25 @@ ssize_t ControllerRead(PS3_HANDLE handle)
     uint8_t count = 0;
     static uint8_t i = 0;
 
-    while(1)
+    while(read(_table->ps3_serial, (&EVENT), sizeof(EVENT)));
+    switch (EVENT.type)
     {
-        read(_table->ps3_serial, (&EVENT), sizeof(EVENT));
-        switch (EVENT.type)
+        case JS_EVENT_BUTTON:
         {
-            case JS_EVENT_BUTTON:
-            {
-                printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
-            }
-            break;
-            case JS_EVENT_AXIS:
-            {
-                if(EVENT.number == 0)
-                {
-                    if(EVENT.number % 2 == 0)
-                        printf("X-Axis %d", EVENT.value);
-                    else
-                        printf("Y-Axis %d", EVENT.value);
-                }
-            }
-            break;
-            default:
-                break;
+            printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
         }
+        case JS_EVENT_AXIS:
+        {
+            if(EVENT.number == 0)
+            {
+                if(EVENT.number % 2 == 0)
+                    printf("X-Axis %d", EVENT.value);
+                else
+                    printf("Y-Axis %d", EVENT.value);
+            }
+        }
+        default:
+            break;
     }
 
     return count;
