@@ -4,13 +4,6 @@ typedef struct{
     int ps3_serial;
 }PS3_controllertable;
 
-typedef struct{
-    uint8_t button;
-    uint16_t trigger_value;
-    uint16_t stick_value;
-    uint16_t stick_angle;
-}Pac_controller;
-
 js_event EVENT;
 
 PS3_HANDLE ConttrollerOpen(const char const* dev)
@@ -26,32 +19,34 @@ PS3_HANDLE ConttrollerOpen(const char const* dev)
         _table = NULL;
     }
 
-
     return _table; 
 }
 
-ssize_t ControllerRead(PS3_HANDLE handle)
+ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
 {
     PS3_controllertable* _table = handle;
     uint8_t count = 0;
-    static uint8_t i = 0;
+    uint16_t x_axis, y_axis;
 
     while(read(_table->ps3_serial, (&EVENT), sizeof(EVENT)));
     switch (EVENT.type)
     {
         case JS_EVENT_BUTTON:
         {
-            printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
+            // printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
+            _cntPkt->button = EVENT.number;
         }
         case JS_EVENT_AXIS:
         {
-            if(EVENT.number == 0)
+            if(EVENT.number == 0 || 1)
             {
                 if(EVENT.number % 2 == 0)
-                    printf("X-Axis %d", EVENT.value);
+                    x_axis = EVENT.value;
                 else
-                    printf("Y-Axis %d", EVENT.value);
+                    y_axis = EVENT.value;
             }
+            _cntPkt->stick_value = sqrt(x_axis*x_axis + y_axis*y_axis);
+            _cntPkt->stick_angle = 360 * atan(y_axis / x_axis);
         }
         default:
             break;

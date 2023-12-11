@@ -1,3 +1,6 @@
+#ifndef PS3CONTROLLER_H
+#define PS3CONTROLLER_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -10,11 +13,33 @@
 #include <linux/joystick.h>
 #include <math.h>
 
-#ifndef PS3CONTROLLER_H
-#define PS3CONTROLLER_H
-
 typedef void* PS3_HANDLE;
 typedef struct js_event js_event;
+
+#define MARU_B 13
+#define SANKAKU_B 12
+#define BATU_B 14
+#define SIKAKU_B 15
+#define UP_B 4
+#define LEFT_B 7
+#define DOWN_B 6
+#define RIGHT_B 5
+#define LEFT_B 10
+#define LEFT_T 8
+#define RIGHT_B 11
+#define RIGHT_T 9
+#define LEFT_S_PUSH 1
+#define RIGHT_S_PUSH 2
+#define START 3
+#define SELECT 0
+#define PS 16
+
+typedef struct{
+    uint8_t button;
+    uint16_t trigger_value;
+    uint16_t stick_value;
+    uint16_t stick_angle;
+}controllerPac;
 
 /**
  * @brief 
@@ -30,7 +55,7 @@ PS3_HANDLE ConttrollerOpen(const char const* dev);
  * @param [in] handle Please use what is made by ControllerOpen();
  * @return ssize_t 
  */
-ssize_t ControllerRead(PS3_HANDLE handle);
+ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt);
 
 /**
  * @brief 

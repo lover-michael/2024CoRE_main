@@ -1,35 +1,47 @@
-#include <stdint.h>
-#include <stdbool.h>
-
 #ifndef COMMAND_H
 #define COMMAND_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
+
+#define MOVE 0xAA
+#define STOP 0x00
+#define HELLO 0xFF
+
+#define MS_TERMINAL 0x5A
 
 /**
  * @brief 
  * 
- * @param motnum 
- * @param message_id 
- * @param power 
- * @param roledir 
- * @param movedir 
- * @param senddata 
+ * @param [in] message_id 
+ * @param [in] power 
+ * @param [in] movedir 
+ * @param [out] senddata 
  */
-void MakeSendMotarData(uint8_t motnum, uint8_t message_id, uint8_t power, bool roledir, uint8_t movedir, uint8_t* senddata);
+void MakeSendMotarData(uint8_t message_id, uint16_t power, uint16_t movedir, uint8_t* senddata, CheckCB checkSum);
 
-#define MOVE 0b1000
-#define STOP 0b0000
-#define BRAKE 0b1111
-#define HELLO 0b1010
+/**
+ * @brief 
+ * 
+ * @param senddata 
+ * @param sizeData 
+ * @return uint8_t 
+ */
+uint8_t CheckSum(uint8_t* senddata, uint8_t sizeData);
 
-#define MOTAR_1 1
-#define MOTAR_2 2
-#define MOTAR_3 3
-#define MOTAR_4 4
-//送信データ構造//
+//送信データ構造(USBtoCANと同じにします...)//
 /*
-|1byte        |2byte        |3byte        |4byte       |
-|address + mid|power        |movedir      |roledir     |
-|             |Motar's power|forw / back  |
-*/
+ *                                              Packet
+ * *************************|*************************|**************************|**************************|
+ *                          |                         |                          |                          |
+ *      MassageID:8bit      |    PayloadSize:8bit     | Payload:8bit*PayloadSize |      ChecKSum:8bit       |
+ *                          |         (Max12)         |                          | (Only when have Payload) |
+ * *************************|*************************|**************************|**************************|
+ * 
+ */
 
 #endif
