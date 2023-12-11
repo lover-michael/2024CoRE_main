@@ -2,7 +2,7 @@
 
 
 
-void MakeSendMotarData(uint8_t message_id, uint16_t power, uint16_t movedir, uint8_t* senddata, CheckCB checkSum)
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, CheckCB checkSum)
 {
     uint8_t payloadSize = sizeof(senddata);
     memset(senddata, 0, payloadSize);
@@ -19,10 +19,11 @@ void MakeSendMotarData(uint8_t message_id, uint16_t power, uint16_t movedir, uin
         case MOVE:
         {
             *(senddata + 1) = payloadSize;
-            *(senddata + 2) = power >> 8;
-            *(senddata + 3) = power & 0xFF; 
-            *(senddata + 4) = movedir >> 1;
-            *(senddata + 5) = (movedir << 7) | MS_TERMINAL;
+            *(senddata + 2) = button;
+            *(senddata + 3) = power >> 8;
+            *(senddata + 4) = power & 0xFF; 
+            *(senddata + 5) = movedir >> 1;
+            *(senddata + 6) = (movedir << 7) | MS_TERMINAL;
         }
             break;
         case HELLO:

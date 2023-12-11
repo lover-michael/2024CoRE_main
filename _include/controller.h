@@ -13,9 +13,6 @@
 #include <linux/joystick.h>
 #include <math.h>
 
-typedef void* PS3_HANDLE;
-typedef struct js_event js_event;
-
 #define MARU_B 13
 #define SANKAKU_B 12
 #define BATU_B 14
@@ -33,6 +30,9 @@ typedef struct js_event js_event;
 #define START 3
 #define SELECT 0
 #define PS 16
+
+typedef void* PS3_HANDLE;
+typedef struct js_event js_event;
 
 typedef struct{
     uint8_t button;
