@@ -26,9 +26,9 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
 {
     PS3_controllertable* _table = handle;
     uint8_t count = 0;
-    uint16_t x_axis, y_axis;
+    int16_t x_axis, y_axis;
 
-    while((count = read(_table->ps3_serial, (&EVENT), sizeof(EVENT))) > 0);
+    while((count = read(_table->ps3_serial, (&EVENT), sizeof(EVENT))) != 0);
     switch (EVENT.type)
     {
         case JS_EVENT_BUTTON:
@@ -46,7 +46,11 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                     y_axis = EVENT.value;
             }
             _cntPkt->stick_value = sqrt(x_axis*x_axis + y_axis*y_axis);
-            _cntPkt->stick_angle = 360 * atan(y_axis / x_axis);
+            int ang = 180 * (atan2(y_axis, x_axis) / M_PI);
+            if(_cntPkt->stick_angle < 0)
+                _cntPkt->stick_angle = (uint16_t)(ang - 180);
+            else
+                _cntPkt->stick_angle = ang;
         }
         default:
             break;

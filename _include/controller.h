@@ -31,6 +31,8 @@
 #define SELECT 0
 #define PS 16
 
+#define M_PI 3.14159265358979323846
+
 typedef void* PS3_HANDLE;
 typedef struct js_event js_event;
 
