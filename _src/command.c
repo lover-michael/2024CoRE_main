@@ -6,6 +6,7 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t m
 {
     uint8_t payloadSize = sizeof(senddata);
     memset(senddata, 0, payloadSize);
+    printf("%x %x %x %x %x %x %x\n",*senddata, *(senddata + 1), *(senddata + 2), *(senddata + 3), *(senddata + 4), *(senddata + 5), *(senddata + 6));
 
     *senddata = message_id;
 
@@ -34,7 +35,4 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t m
         default:
             break;
     }
-
-    *(senddata + 6) = checkSum(senddata, payloadSize);
-
 }

@@ -7,7 +7,7 @@
 int main()
 {
     const char _dev_cnt[] = "/dev/input/js0";
-    const char _dev_bord[] = "/dev/ttyUSB0";
+    // const char _dev_bord[] = "/dev/ttyUSB0";
     
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
@@ -15,7 +15,7 @@ int main()
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
-    SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
+    // SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
     //コントローラーの接続を確認する
     do{
@@ -23,7 +23,8 @@ int main()
         if(cPac.button == PS)
         {
             MakeSendData(HELLO, 0, 0, 0, senddata);
-            SerialWrite(_handle, senddata, 2);
+            // SerialWrite(_handle, senddata, 2);
+            printf("%x %x %x %x %x %x %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
             break;
         }
     }while(cPac.button != PS);
@@ -55,12 +56,14 @@ int main()
             }
             
             MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, senddata);
-            SerialWrite(_handle, senddata, 7);
+            // SerialWrite(_handle, senddata, 7);
+            printf("%d %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
+            memset(&cPac, 0, sizeof(cPac));
         }
     }
 
     ControllerClose(_handle_con);
-    SerialClose(_handle);
+    // SerialClose(_handle);
 
     return 0;
 }

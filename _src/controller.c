@@ -28,22 +28,22 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     uint8_t count = 0;
     int16_t x_axis, y_axis;
 
-    while((count = read(_table->ps3_serial, (&EVENT), sizeof(EVENT))) != 0);
+    count = read(_table->ps3_serial, (&EVENT), sizeof(EVENT));
     switch (EVENT.type)
     {
         case JS_EVENT_BUTTON:
         {
-            // printf("Button %u %s\n", EVENT.number, EVENT.value ? "pressed" : "released");      
-            _cntPkt->button = EVENT.number;
+            if((EVENT.value ? "pressed" : "released") == "pressed");
+                _cntPkt->button = EVENT.number;
         }
         case JS_EVENT_AXIS:
         {
             if(EVENT.number == 0 || 1)
             {
                 if(EVENT.number % 2 == 0)
-                    x_axis = EVENT.value;
+                    x_axis = EVENT.value - 5000;
                 else
-                    y_axis = EVENT.value;
+                    y_axis = EVENT.value - 5000;
             }
             _cntPkt->stick_value = sqrt(x_axis*x_axis + y_axis*y_axis);
             int ang = 180 * (atan2(y_axis, x_axis) / M_PI);

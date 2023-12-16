@@ -22,7 +22,7 @@ INCDIR	= -I _include
 LIBDIR	=
 
 #追加するライブラリファイル
-LIBS	= 
+LIBS	= -lm
 
 #ターゲットファイルの生成
 $(TARGET): $(OBJS)

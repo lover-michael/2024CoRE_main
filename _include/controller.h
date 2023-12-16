@@ -21,9 +21,9 @@
 #define LEFT_B 7
 #define DOWN_B 6
 #define RIGHT_B 5
-#define LEFT_B 10
+#define LEFT_1 10
 #define LEFT_T 8
-#define RIGHT_B 11
+#define RIGHT_1 11
 #define RIGHT_T 9
 #define LEFT_S_PUSH 1
 #define RIGHT_S_PUSH 2
