@@ -11,6 +11,7 @@ int main()
     
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
+    uint8_t hijou = 0;
     ssize_t count = 0;
 
     controllerPac cPac;
@@ -22,10 +23,16 @@ int main()
         ControllerRead(_handle_con, &cPac);
         if(cPac.button == PS)
         {
-            MakeSendData(HELLO, 0, 0, 0, senddata);
+            MakeSendData(HELLO, 0, 0, 0, FINE,senddata);
             // SerialWrite(_handle, senddata, 2);
             printf("%x %x %x %x %x %x %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
-            break;
+            for(int i = 0;i < 1000000;i++)
+            {
+                for(int j = 0;j < 1000;)
+                {
+                    j++;
+                }
+            }
         }
     }while(cPac.button != PS);
 
@@ -35,17 +42,19 @@ int main()
 
         if(count < 0)
         {
-            continue;
+            hijou = ALERT;
+            MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, hijou, senddata);
         }
         else
         {    
-            if(cPac.button == SELECT && MessID_H == FINE)
+            if(cPac.button == SELECT && hijou == FINE)
             {
-                MessID_H = ALERT;
+                hijou = ALERT;
+                MessID_H = STOP;
             }
-            else if (cPac.button == START && MessID_H == ALERT)
+            else if (cPac.button == START && hijou == ALERT)
             {
-                MessID_H = FINE;
+                hijou = FINE;
             }
             else
             {
@@ -55,10 +64,10 @@ int main()
                     MessID_H = STOP;
             }
             
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, senddata);
+            MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, hijou, senddata);
             // SerialWrite(_handle, senddata, 7);
-            printf("%d %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
-            memset(&cPac, 0, sizeof(cPac));
+            // printf("%d %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
+            printf("%x %x %d %x %d\n", MessID_H, cPac.button, cPac.stick_value, hijou, cPac.stick_angle);
         }
     }
 

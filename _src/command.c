@@ -2,11 +2,11 @@
 
 
 
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata)
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t hijou, uint8_t* senddata)
 {
     uint8_t payloadSize = sizeof(senddata);
     memset(senddata, 0, payloadSize);
-    printf("%x %x %x %x %x %x %x\n",*senddata, *(senddata + 1), *(senddata + 2), *(senddata + 3), *(senddata + 4), *(senddata + 5), *(senddata + 6));
+    // printf("%x %x %x %x %x %x %x\n",*senddata, *(senddata + 1), *(senddata + 2), *(senddata + 3), *(senddata + 4), *(senddata + 5), *(senddata + 6));
 
     *senddata = message_id;
 
@@ -24,7 +24,7 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t m
             *(senddata + 3) = power >> 8;
             *(senddata + 4) = power & 0xFF; 
             *(senddata + 5) = movedir >> 1;
-            *(senddata + 6) = MS_TERMINAL;
+            *(senddata + 6) = hijou;
         }
             break;
         case HELLO:
