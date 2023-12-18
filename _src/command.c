@@ -14,6 +14,8 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t m
     {
         case STOP:
         {
+            if(hijou == ALERT)
+                *(senddata + 6) |= hijou;
             return;
         }
             break;

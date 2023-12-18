@@ -11,7 +11,7 @@ int main()
     
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
-    uint8_t hijou = 0;
+    uint8_t hijou = FINE;
     ssize_t count = 0;
 
     controllerPac cPac;
@@ -51,23 +51,25 @@ int main()
             {
                 hijou = ALERT;
                 MessID_H = STOP;
+                break;
             }
             else if (cPac.button == START && hijou == ALERT)
             {
                 hijou = FINE;
             }
+            else if(cPac.button == SANKAKU_B)
+            {
+                MessID_H = STOP;
+            }
             else
             {
                 MessID_H = MOVE;
-
-                if(cPac.stick_value == 0)
-                    MessID_H = STOP;
             }
             
             MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, hijou, senddata);
             // SerialWrite(_handle, senddata, 7);
-            // printf("%d %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
-            printf("%x %x %d %x %d\n", MessID_H, cPac.button, cPac.stick_value, hijou, cPac.stick_angle);
+            printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
+            // printf("%x %x %d %x %d\n", MessID_H, cPac.button, cPac.stick_value, hijou, cPac.stick_angle);
         }
     }
 
