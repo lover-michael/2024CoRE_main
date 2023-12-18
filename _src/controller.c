@@ -4,7 +4,8 @@ typedef struct{
     int ps3_serial;
 }PS3_controllertable;
 
-js_event EVENT;
+#define X_AXIS 0
+#define Y_AXIS 1 
 
 PS3_HANDLE ConttrollerOpen(const char const* dev)
 {
@@ -24,38 +25,46 @@ PS3_HANDLE ConttrollerOpen(const char const* dev)
 
 ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
 {
+    js_event EVENT;
     PS3_controllertable* _table = handle;
     uint8_t count = 0;
-    int16_t x_axis, y_axis;
+    static double axis[2] = {0, 0};
+    static bool flag_axis = 0;
 
     while(read(_table->ps3_serial, (&EVENT), sizeof(EVENT)) < 7);
-    switch (EVENT.type)
+    switch (EVENT.type & ~JS_EVENT_INIT)
     {
         case JS_EVENT_BUTTON:
         {
-            if((EVENT.value ? "pressed" : "released") == "pressed"){
+            if(EVENT.value == 1){
                 _cntPkt->button = EVENT.number;
-                // printf("button:%d\n", _cntPkt->button);
             }
         }
         case JS_EVENT_AXIS:
         {
-            if(EVENT.number == 0)
+            if(EVENT.number == 1 || EVENT.number == 0)
             {
-                if(EVENT.number == 0)
-                    x_axis = EVENT.value;
-                else if(EVENT.number == 1)
-                    y_axis = EVENT.value;
+                axis[EVENT.number ? X_AXIS : Y_AXIS] = EVENT.value / 100.0;
 
-                _cntPkt->stick_value = sqrt(x_axis*x_axis + y_axis*y_axis);
-                // uint16_t ang = 180 * atan2(y_axis, x_axis);
-                _cntPkt->stick_angle = (float)180 * atan2(y_axis / 1000, x_axis / 1000);
-                // if(_cntPkt->stick_angle < 0)
-                //     _cntPkt->stick_angle = (uint8_t)ang - 180;
-                // else
-                //     _cntPkt->stick_angle = ang;
+                if(flag_axis == true)
+                {
+                    _cntPkt->stick_value = sqrt(axis[X_AXIS] * axis[X_AXIS] + axis[Y_AXIS] * axis[Y_AXIS]) - 50;
+
+                    if(_cntPkt->stick_value > 0x121)
+                        _cntPkt->stick_value = 0x121;
+
+                    double ang = 360 * (atan2(axis[Y_AXIS], axis[X_AXIS]) / M_PI);
+                    
+                    
+
+                    _cntPkt->stick_angle = ang;
+
+                    memset(axis, 0, 2);
+                    flag_axis = false;
+                }
+                else
+                    flag_axis = true;
             }
-            // printf("value : %d\nangle : %d\n", _cntPkt->stick_value, _cntPkt->stick_angle);
         }
         default:
             break;
