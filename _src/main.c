@@ -17,7 +17,7 @@ int main()
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
-    // SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
+    SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
     //コントローラーの接続を確認する
     do{
@@ -25,7 +25,7 @@ int main()
         if(cPac.button == PS)
         {
             MakeSendData(HELLO, 0, 0, 0,senddata);
-            // SerialWrite(_handle, senddata, 2);
+            SerialWrite(_handle, senddata, 2);
             // printf("%x %x %x %x %x %x %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
             for(int i = 0;i < 1000000;i++)
             {
@@ -80,14 +80,14 @@ int main()
             }
             
             MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, senddata);
-            // SerialWrite(_handle, senddata, sizeof(senddata));
+            SerialWrite(_handle, senddata, sizeof(senddata));
             // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
-            printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
+            // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
         }
     }
 
     ControllerClose(_handle_con);
-    // SerialClose(_handle);
+    SerialClose(_handle);
 
     return 0;
 }
