@@ -48,15 +48,18 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
 
                 if(flag_axis == true)
                 {
-                    _cntPkt->stick_value = sqrt(axis[X_AXIS] * axis[X_AXIS] + axis[Y_AXIS] * axis[Y_AXIS]) - 50;
+                    _cntPkt->stick_value = (sqrt(axis[X_AXIS] * axis[X_AXIS] + axis[Y_AXIS] * axis[Y_AXIS]))*2 - 100;
 
-                    if(_cntPkt->stick_value > 0x121)
-                        _cntPkt->stick_value = 0x121;
+                    if(_cntPkt->stick_value > 555)
+                        _cntPkt->stick_value = 555;
 
-                    double ang = 360 * (atan2(axis[Y_AXIS], axis[X_AXIS]) / M_PI);
+                    double ang = 180 * (atan2(axis[Y_AXIS], -axis[X_AXIS]) / M_PI);
                     
-                    
+                    if(ang < 0)
+                        ang += 360;
 
+                    printf("%4.2lf\n", ang);
+                    
                     _cntPkt->stick_angle = ang;
 
                     memset(axis, 0, 2);

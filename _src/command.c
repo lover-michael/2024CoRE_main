@@ -1,12 +1,9 @@
 #include "command.h"
 
-
-
 void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t hijou, uint8_t* senddata)
 {
     uint8_t payloadSize = sizeof(senddata);
     memset(senddata, 0, payloadSize);
-    // printf("%x %x %x %x %x %x %x\n",*senddata, *(senddata + 1), *(senddata + 2), *(senddata + 3), *(senddata + 4), *(senddata + 5), *(senddata + 6));
 
     *senddata = message_id;
 
@@ -37,4 +34,20 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t m
         default:
             break;
     }
+}
+
+void MakeByte(uint8_t* senddata, uint16_t arg_1, ...)
+{
+    va_list ap;
+    uint8_t count = 0;
+    
+    va_start(ap, arg_1);
+
+    while(arg_1 != NULL)
+    {
+        *senddata |= va_arg();
+    }
+
+
+    va_end(ap);
 }

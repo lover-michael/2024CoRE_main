@@ -7,7 +7,7 @@
 int main()
 {
     const char _dev_cnt[] = "/dev/input/js0";
-    // const char _dev_bord[] = "/dev/ttyUSB0";
+    const char _dev_bord[] = "/dev/ttyUSB0";
     
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
@@ -67,8 +67,8 @@ int main()
             }
             
             MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, hijou, senddata);
-            // SerialWrite(_handle, senddata, 7);
-            printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
+            // SerialWrite(_handle, senddata, sizeof(senddata));
+            // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
             // printf("%x %x %d %x %d\n", MessID_H, cPac.button, cPac.stick_value, hijou, cPac.stick_angle);
         }
     }

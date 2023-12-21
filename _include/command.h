@@ -6,14 +6,15 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
 
 #define MOVE 0xA5
 #define STOP 0x00
 #define HELLO 0xFF
-#define ALERT 0xBB
-#define FINE 0xCC
+#define ALERT 0xEF
+#define FINE 0xEE
 
 #define MS_TERMINAL 0x5A
 
@@ -28,7 +29,14 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
  */
 void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t hijou, uint8_t* senddata);
 
-
+/**
+ * @brief 
+ * 
+ * @param [out] senddata Must prepare the pointer which is larger byte than arduments
+ * @param [in] arg_1 Everything after this argument will be stored in senddata
+ * @param ... 
+ */
+void MakeByte(uint8_t* senddata, uint16_t arg_1, ...);
 
 //送信データ構造(USBtoCANと同じにします...)//
 /*
