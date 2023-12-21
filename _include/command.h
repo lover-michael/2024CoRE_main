@@ -13,8 +13,8 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
 #define MOVE 0xA5
 #define STOP 0x00
 #define HELLO 0xFF
-#define ALERT 0xEF
-#define FINE 0xEE
+#define ALERT 0xEE
+#define FINE 0xEF
 
 #define MS_TERMINAL 0x5A
 
@@ -27,7 +27,7 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
  * @param movedir 
  * @param senddata 
  */
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t hijou, uint8_t* senddata);
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata);
 
 /**
  * @brief 
