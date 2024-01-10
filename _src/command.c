@@ -1,6 +1,6 @@
 #include "command.h"
 
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata)
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t power_2, uint16_t movedir, uint16_t movedir_2, uint8_t* senddata)
 {
     uint8_t payloadSize = sizeof(senddata);
     memset(senddata, 0, payloadSize);

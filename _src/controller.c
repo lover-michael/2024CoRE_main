@@ -7,6 +7,9 @@ typedef struct{
 #define X_AXIS 0
 #define Y_AXIS 1 
 
+#define LEFT_STICK 0
+#define RIGHT_STICK 1
+
 PS3_HANDLE ConttrollerOpen(const char const* dev)
 {
     PS3_controllertable* _table = (PS3_controllertable*)malloc(sizeof(PS3_controllertable));
@@ -28,15 +31,15 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     js_event EVENT;
     PS3_controllertable* _table = handle;
     uint8_t count = 0;
-    static double axis[2] = {0, 0};
-    static bool flag_axis = 0;
+    static double axis[2][2] = { {0, 0}, {0, 0} };
+    static bool flag_axis[2] = {0, 0};
 
     while(read(_table->ps3_serial, (&EVENT), sizeof(EVENT)) < 7);
     switch (EVENT.type & ~JS_EVENT_INIT)
     {
         case JS_EVENT_BUTTON:
         {
-            if(EVENT.value == 1){
+            if(EVENT.value >= 1){
                 _cntPkt->button = EVENT.number;
             }
         }
@@ -44,27 +47,52 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
         {
             if(EVENT.number == 1 || EVENT.number == 0)
             {
-                axis[EVENT.number ? X_AXIS : Y_AXIS] = EVENT.value / 4.0;
+                axis[LEFT_STICK][EVENT.number ? X_AXIS : Y_AXIS] = EVENT.value / 4.0;
 
-                if(flag_axis == true)
+                if(flag_axis[LEFT_STICK] == true)
                 {
-                    _cntPkt->stick_value = (sqrt(axis[X_AXIS] * axis[X_AXIS] + axis[Y_AXIS] * axis[Y_AXIS]))*2 - 100;
+                    _cntPkt->stick_value[LEFT_STICK] = (sqrt(axis[LEFT_STICK][X_AXIS] * axis[LEFT_STICK][X_AXIS] + axis[LEFT_STICK][Y_AXIS] * axis[LEFT_STICK][Y_AXIS]))*2 - 100;
 
-                    if(_cntPkt->stick_value > 16200)
-                        _cntPkt->stick_value = 16200;
+                    if(_cntPkt->stick_value[LEFT_STICK] > 16200)
+                        _cntPkt->stick_value[LEFT_STICK] = 16200;
 
-                    double ang = 180 * (atan2(axis[Y_AXIS], -axis[X_AXIS]) / M_PI);
+                    double ang = 180 * (atan2(axis[LEFT_STICK][Y_AXIS], -axis[LEFT_STICK][X_AXIS]) / M_PI);
                     
                     if(ang < 0)
                         ang += 360;
                     
-                    _cntPkt->stick_angle = ang;
+                    _cntPkt->stick_angle[LEFT_STICK] = ang;
 
                     memset(axis, 0, 2);
-                    flag_axis = false;
+                    flag_axis[LEFT_STICK] = false;
                 }
                 else
-                    flag_axis = true;
+                    flag_axis[LEFT_STICK] = true;
+            }
+
+            if(EVENT.number == 2 || EVENT.number == 3)
+            {
+                axis[RIGHT_STICK][(EVENT.number - 2) ? X_AXIS : Y_AXIS ] = EVENT.value / 4.0;
+
+                if(flag_axis[RIGHT_STICK] == true)
+                {
+                    _cntPkt->stick_value[RIGHT_STICK] = (sqrt(axis[RIGHT_STICK][X_AXIS] * axis[RIGHT_STICK][X_AXIS] + axis[RIGHT_STICK][Y_AXIS] * axis[RIGHT_STICK][Y_AXIS]))*2 - 100;
+
+                    if(_cntPkt->stick_value[RIGHT_STICK] > 16200)
+                        _cntPkt->stick_value[RIGHT_STICK] = 16200;
+
+                    double ang = 180 * (atan2(axis[RIGHT_STICK][Y_AXIS], -axis[RIGHT_STICK][X_AXIS]) / M_PI);
+                    
+                    if(ang < 0)
+                        ang += 360;
+                    
+                    _cntPkt->stick_angle[RIGHT_STICK] = ang;
+
+                    memset(axis, 0, 2);
+                    flag_axis[RIGHT_STICK] = false;
+                }
+                else
+                    flag_axis[RIGHT_STICK] = true;
             }
         }
         default:
