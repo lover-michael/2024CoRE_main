@@ -12,7 +12,7 @@ int main()
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
     uint8_t hijou = 0;
-    uint8_t judge = 0;
+    bool flagHijou = true;
     ssize_t count = 0;
 
     controllerPac cPac;
@@ -48,44 +48,42 @@ int main()
             MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
             // SerialWrite(_handle, senddata, 5);
             hijou++;
-            if(hijou > 1000)
+            if(hijou > 50)
                 break;
         }
         else
         {    
-            if(cPac.button == START && judge == 1)
+            if(cPac.button == PS)
             {
-                MessID_H = ALERT;
+                flagHijou = !flagHijou;
+                switch (flagHijou)
+                {
+                    case true:
+                        MessID_H = FINE;
+                        break;
+                    case false:
+                        MessID_H = ALERT;
+                        break;    
+                    default:
+                        break;
+                }
                 memset(&cPac, 0, sizeof(cPac));
-                judge = 0;
+                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+                // SerialWrite(_handle, senddata, 5);
             }
-            else if (cPac.button == SELECT && judge == 0)
+            
+            if(MessID_H != ALERT)
             {
-                MessID_H = FINE;
-                judge = 1;
-            }
-            else if(cPac.button == SANKAKU_B && judge == 1)
-            {
-                MessID_H = STOP;
-                memset(&cPac, 0, sizeof(cPac));
-            }
-            else if(cPac.button == PS && MessID_H == STOP)
-            {
-                break;
-            }
-            else if(judge ==  1 && cPac.stick_value[0] > 100)
-            {
+                MessID_H = ARM;
+                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+                // SerialWrite(_handle, senddata, 5);
+
                 MessID_H = MOVE;
-                judge = 1;
+                MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+                // SerialWrite(_handle, senddata, 5);                
             }
 
-            MessID_H = ARM;
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
-            // SerialWrite(_handle, senddata, 5);
 
-            MessID_H = MOVE;
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
-            // SerialWrite(_handle, senddata, 5);
 
             // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
             // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
