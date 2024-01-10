@@ -1,19 +1,17 @@
 #include "command.h"
 
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t power_2, uint16_t movedir, uint16_t movedir_2, uint8_t* senddata)
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata)
 {
-    uint8_t payloadSize = sizeof(senddata);
-    memset(senddata, 0, payloadSize);
-
+    memset(senddata, 0, sizeof(senddata));
     *senddata = message_id;
 
     switch (message_id)
     {
+        case HELLO:
         case STOP:
         {
             return;
         }
-            break;
         case MOVE:
         {
             *(senddata + 1) = button;
@@ -22,9 +20,12 @@ void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t p
             *(senddata + 4) = movedir;
         }
             break;
-        case HELLO:
+        case ARM:
         {
-            return;
+            *(senddata + 1) = button;
+            *(senddata + 2) = power >> 7;
+            *(senddata + 3) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01); 
+            *(senddata + 4) = movedir;
         }
             break;
         default:

@@ -17,17 +17,16 @@ int main()
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
-    SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
+    // SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
     //コントローラーの接続を確認する
     do{
         ControllerRead(_handle_con, &cPac);
         if(cPac.button == PS)
         {
-            MakeSendData(HELLO, 0, 0, 0,senddata);
-            SerialWrite(_handle, senddata, 2);
-            printf("%x %x %x %x %x %x %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6]);
-            for(int i = 0;i < 1000000;i++)
+            MakeSendData(HELLO, 0, 0, 0, senddata);
+            // SerialWrite(_handle, senddata, 2);
+            for(int i = 0;i < 10000;i++)
             {
                 for(int j = 0;j < 1000;)
                 {
@@ -46,10 +45,10 @@ int main()
         if(count < 0)
         {
             MessID_H = ALERT;
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, senddata);
-            SerialWrite(_handle, senddata, 5);
+            MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+            // SerialWrite(_handle, senddata, 5);
             hijou++;
-            if(hijou > 20)
+            if(hijou > 1000)
                 break;
         }
         else
@@ -57,6 +56,7 @@ int main()
             if(cPac.button == START && judge == 1)
             {
                 MessID_H = ALERT;
+                memset(&cPac, 0, sizeof(cPac));
                 judge = 0;
             }
             else if (cPac.button == SELECT && judge == 0)
@@ -73,21 +73,27 @@ int main()
             {
                 break;
             }
-            else if(judge ==  1 && cPac.stick_value > 100)
+            else if(judge ==  1 && cPac.stick_value[0] > 100)
             {
                 MessID_H = MOVE;
                 judge = 1;
             }
-            
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle, senddata);
-            SerialWrite(_handle, senddata, 5);
+
+            MessID_H = ARM;
+            MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+            // SerialWrite(_handle, senddata, 5);
+
+            MessID_H = MOVE;
+            MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+            // SerialWrite(_handle, senddata, 5);
+
             // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
             // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
         }
     }
 
     ControllerClose(_handle_con);
-    SerialClose(_handle);
+    // SerialClose(_handle);
 
     return 0;
 }

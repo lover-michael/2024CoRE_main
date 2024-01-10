@@ -88,6 +88,8 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                     
                     _cntPkt->stick_angle[RIGHT_STICK] = ang;
 
+                    // printf("v: %d a: %f\n", _cntPkt->stick_value[RIGHT_STICK], ang);
+
                     memset(axis, 0, 2);
                     flag_axis[RIGHT_STICK] = false;
                 }

@@ -15,6 +15,7 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
 #define HELLO 0xFF
 #define ALERT 0xEE
 #define FINE 0xEF
+#define ARM 0x55
 
 #define MS_TERMINAL 0x5A
 
@@ -24,10 +25,12 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
  * @param message_id 
  * @param button 
  * @param power 
+ * @param power_2 
  * @param movedir 
+ * @param movedir_2 
  * @param senddata 
  */
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t power_2, uint16_t movedir, uint16_t movedir_2, uint8_t* senddata);
+void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata);
 
 /**
  * @brief 
