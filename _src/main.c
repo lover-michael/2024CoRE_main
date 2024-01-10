@@ -56,17 +56,10 @@ int main()
             if(cPac.button == PS)
             {
                 flagHijou = !flagHijou;
-                switch (flagHijou)
-                {
-                    case true:
-                        MessID_H = FINE;
-                        break;
-                    case false:
-                        MessID_H = ALERT;
-                        break;    
-                    default:
-                        break;
-                }
+                
+                if(flagHijou == true){ MessID_H = FINE; }
+                else{ MessID_H = ALERT; }
+
                 memset(&cPac, 0, sizeof(cPac));
                 MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
                 // SerialWrite(_handle, senddata, 5);
