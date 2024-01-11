@@ -68,18 +68,13 @@ int main()
             if(MessID_H != ALERT)
             {
                 MessID_H = ARM;
-                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+                MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
                 // SerialWrite(_handle, senddata, 5);
 
                 MessID_H = MOVE;
-                MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
                 // SerialWrite(_handle, senddata, 5);                
             }
-
-
-
-            // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
-            // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
         }
     }
 
@@ -88,3 +83,21 @@ int main()
 
     return 0;
 }
+
+            // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
+
+            // else if(cPac.button == SANKAKU_B && judge == 1)
+            // {
+            //     MessID_H = STOP;
+            //     memset(&cPac, 0, sizeof(cPac));
+            // }
+            // else if(cPac.button == PS && MessID_H == STOP)
+            // {
+            //     break;
+            // }
+            // else if(judge ==  1 && cPac.stick_value[0] > 100)
+            // {
+            //     MessID_H = MOVE;
+            //     judge = 1;
+            // }

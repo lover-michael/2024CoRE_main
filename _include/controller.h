@@ -38,7 +38,7 @@ typedef struct js_event js_event;
 
 typedef struct{
     uint8_t button;
-    uint16_t trigger_value;
+    uint16_t trigger_value[2];
     uint16_t stick_value[2];
     uint16_t stick_angle[2];
 }controllerPac;
