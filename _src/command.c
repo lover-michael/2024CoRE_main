@@ -1,37 +1,73 @@
 #include "command.h"
 
-void MakeSendData(uint8_t message_id, uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata)
+void MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint8_t dataSize)
 {
+    uint8_t count = 0, mark = 0;
+    uint8_t* cobs = (uint8_t*)malloc(dataSize);
     memset(senddata, 0, sizeof(senddata));
-    *senddata = message_id;
-
-    switch (message_id)
+    
+    *senddata = ReturnMessage(button);
+    if(*senddata != ALERT)
     {
-        case HELLO:
-        case STOP:
-        case ALERT:
-        case FINE:
+        *(senddata + 1) = power >> 7;
+        *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
+        *(senddata + 3) = movedir;
+    }
+    
+
+    for(uint8_t i = 0;i < (dataSize - 1);i++)
+    {
+        if(*(senddata + i) != 0x00)
         {
-            return;
+            count++;
+            *(cobs + (i + 1)) = *(senddata + i);
         }
-        case MOVE:
+        else
         {
-            *(senddata + 1) = button;
-            *(senddata + 2) = power >> 7;
-            *(senddata + 3) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01); 
-            *(senddata + 4) = movedir;
+            count++;
+            *(cobs + mark) = count;
+            mark = i + 1;
+            count = 0;
+            *(cobs + mark) = count;
         }
-            break;
-        case ARM:
-        {
-            *(senddata + 1) = button;
-            *(senddata + 2) = power >> 7;
-            *(senddata + 3) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01); 
-            *(senddata + 4) = movedir;
-        }
-            break;
-        default:
-            break;
+    }
+    *(cobs + mark) = count;
+    *(cobs + (dataSize + 1)) = 0x00;
+
+    memcpy(senddata, cobs, sizeof(cobs));
+    free(cobs);
+
+    return;
+}
+
+uint8_t ReturnMessage(uint8_t num)
+{
+    uint8_t msg[] = { TURN, FINE, ALERT, HELLO, STOP, MOVE };
+    static bool pathButton[] = {0, 0, 0, 0, 0, 0};
+
+    if(num == SELECT)
+    {
+        pathButton[1] = !pathButton[1];
+        if(pathButton[1] == true)
+            return msg[1];
+    }
+    else if(num == START)
+    {
+        pathButton[2] = !pathButton[2];
+        if(pathButton[2] == true)
+            return msg[2];
+    }
+
+    if(pathButton[1] != true)
+    {
+        if(num == SANKAKU_B)
+            return msg[4];
+        else if(num == PS)
+            return msg[3];
+        else if(num == MOVE)
+            return msg[5];
+        else if(num == TURN)
+            return msg[0];
     }
 }
 
