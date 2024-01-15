@@ -24,8 +24,9 @@ int main()
         ControllerRead(_handle_con, &cPac);
         if(cPac.button == PS)
         {
-            MakeSendData(HELLO, 0, 0, 0, senddata);
-            // SerialWrite(_handle, senddata, 2);
+            MakeDataCobs(0, 0, 0, senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            printf("%ld\n", count);
             for(int i = 0;i < 10000;i++)
             {
                 for(int j = 0;j < 1000;)
@@ -45,36 +46,29 @@ int main()
         if(count < 0)
         {
             MessID_H = ALERT;
-            MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
-            // SerialWrite(_handle, senddata, 5);
+            MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            printf("%ld\n", count);
             hijou++;
             if(hijou > 50)
                 break;
         }
         else
         {    
-            if(cPac.button == PS)
-            {
-                flagHijou = !flagHijou;
-                
-                if(flagHijou == true){ MessID_H = FINE; }
-                else{ MessID_H = ALERT; }
+            //遠隔非常停止等を指示する通信
+            MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
 
-                memset(&cPac, 0, sizeof(cPac));
-                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
-                // SerialWrite(_handle, senddata, 5);
-            }
-            
-            if(MessID_H != ALERT)
-            {
-                MessID_H = ARM;
-                MakeSendData(MessID_H, cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
-                // SerialWrite(_handle, senddata, 5);
+            //足回り用の通信
+            MakeDataCobs(MOVE, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
 
-                MessID_H = MOVE;
-                MakeSendData(MessID_H, cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
-                // SerialWrite(_handle, senddata, 5);                
-            }
+            //放蕩浅海用の通信
+            MakeDataCobs(TURN, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
         }
     }
 
@@ -83,21 +77,3 @@ int main()
 
     return 0;
 }
-
-            // printf("%x %x %x %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
-            // printf("%x %x %d %d\n", MessID_H, cPac.button, cPac.stick_value, cPac.stick_angle);
-
-            // else if(cPac.button == SANKAKU_B && judge == 1)
-            // {
-            //     MessID_H = STOP;
-            //     memset(&cPac, 0, sizeof(cPac));
-            // }
-            // else if(cPac.button == PS && MessID_H == STOP)
-            // {
-            //     break;
-            // }
-            // else if(judge ==  1 && cPac.stick_value[0] > 100)
-            // {
-            //     MessID_H = MOVE;
-            //     judge = 1;
-            // }

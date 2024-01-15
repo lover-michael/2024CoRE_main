@@ -39,7 +39,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     {
         case JS_EVENT_BUTTON:
         {
-            if(EVENT.value >= 1){
+            if((EVENT.value ? "pressed" : "released") == "pressed"){
                 _cntPkt->button = EVENT.number;
                 if(_cntPkt->button == RIGHT_T || _cntPkt->button == LEFT_T)
                     _cntPkt->trigger_value[(_cntPkt->button - 8) ? RIGHT : LEFT] = EVENT.value;
