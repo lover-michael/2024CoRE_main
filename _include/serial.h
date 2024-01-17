@@ -32,7 +32,7 @@ linuxでシリアル通信を行う手順
  * @param [in] baudrate when you put into the baudrate, add a 'B' to the head of baudrate's number
  * @return SERIAL_HANDLE 
  */
-SERIAL_HANDLE SerialOpen(const char* const dev, uint16_t baudrate);
+SERIAL_HANDLE SerialOpen(const char* const dev, uint64_t baudrate);
 
 /**
  * @brief 

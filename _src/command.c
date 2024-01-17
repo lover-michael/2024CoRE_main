@@ -7,12 +7,12 @@ void MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* sen
     memset(senddata, 0, sizeof(senddata));
     
     *senddata = ReturnMessage(button);
-    if(*senddata != ALERT)
-    {
-        *(senddata + 1) = power >> 7;
-        *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
-        *(senddata + 3) = movedir;
-    }
+    // if(*senddata != ALERT)
+    // {
+    //     *(senddata + 1) = power >> 7;
+    //     *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
+    //     *(senddata + 3) = movedir;
+    // }
     
 
     for(uint8_t i = 0;i < (dataSize - 1);i++)
@@ -46,29 +46,17 @@ uint8_t ReturnMessage(uint8_t num)
     static bool pathButton[] = {0, 0, 0, 0, 0, 0};
 
     if(num == SELECT)
-    {
-        pathButton[1] = !pathButton[1];
-        if(pathButton[1] == true)
-            return msg[1];
-    }
+        return msg[1];
     else if(num == START)
-    {
-        pathButton[2] = !pathButton[2];
-        if(pathButton[2] == true)
-            return msg[2];
-    }
-
-    if(pathButton[1] != true)
-    {
-        if(num == SANKAKU_B)
-            return msg[4];
-        else if(num == PS)
-            return msg[3];
-        else if(num == MOVE)
-            return msg[5];
-        else if(num == TURN)
-            return msg[0];
-    }
+        return msg[2];
+    else if(num == SANKAKU_B)
+        return msg[4];
+    else if(num == PS)
+        return msg[3];
+    else if(num == MOVE)
+        return msg[5];
+    else if(num == TURN)
+        return msg[0];
 }
 
 // void MakeByte(uint8_t* senddata, uint16_t arg_1, ...)
