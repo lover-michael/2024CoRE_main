@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef SERIAL_H
+#define SERIAL_H
+
 typedef void* SERIAL_HANDLE;
 
 /*
@@ -60,3 +63,4 @@ ssize_t SerialWrite(SERIAL_HANDLE handle, unsigned char* buff, uint8_t size);
  * @return ssize_t 
  */
 ssize_t SerialRead(SERIAL_HANDLE handle, unsigned char* buff, uint8_t size);
+#endif
