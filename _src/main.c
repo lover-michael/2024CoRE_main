@@ -19,17 +19,18 @@ int main()
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
     SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
-    while (1)
-    {
+    // while (1)
+    // {
         senddata[0] =2;
         senddata[1] =0xff;
         senddata[2] =0;
         count = SerialWrite(_handle, senddata, 3);
         printf("Send %x %x %x \n",senddata[0], senddata[1], senddata[2]);//, senddata[3], senddata[4], senddata[5]);
-        SerialRead(_handle,senddata,3);
-        printf("Recive %x %x %x\n",senddata[0], senddata[1], senddata[2]);//, senddata[3], senddata[4], senddata[5]);
-        sleep(1);
-    }
+        // SerialRead(_handle,senddata,3);
+        // printf("Recive %x %x %x\n",senddata[0], senddata[1], senddata[2]);//, senddata[3], senddata[4], senddata[5]);
+        // sleep(1);
+        return 0;
+    // }
     
 
     //コントローラーの接続を確認する

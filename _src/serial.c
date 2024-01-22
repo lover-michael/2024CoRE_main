@@ -37,8 +37,8 @@ SERIAL_HANDLE SerialOpen(const char *const dev, uint64_t baudrate)
 
     ioctl(_table->serial, TCSETS, &_tio); // ポート設定の有効化
 
-    // u_long val = 1;
-    // ioctl(_table->serial, FIONBIO, &val); // 非同期化
+    u_long val = 1;
+    ioctl(_table->serial, FIONBIO, &val); // 非同期化
 
     return _table;
 }
