@@ -33,7 +33,7 @@ int main()
     //コントローラーの接続を確認する
     do{
         ControllerRead(_handle_con, &cPac);
-        if(cPac.button == PS)
+        if(cPac.button == 10)
         {
             MakeDataCobs(0, 0, 0, senddata, 6);
             count = SerialWrite(_handle, senddata, 6);
@@ -46,7 +46,7 @@ int main()
                 }
             }
         }
-    }while(cPac.button != PS);
+    }while(cPac.button != 10);
 
     memset(&cPac, 0, sizeof(cPac));
 
@@ -70,9 +70,9 @@ int main()
             // senddata[0] =2;
             // senddata[1] =0xff;
             // senddata[2] =0;
-            MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 3);
-            count = SerialWrite(_handle, senddata, 3);
-            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            // MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 3);
+            // count = SerialWrite(_handle, senddata, 3);
+            // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
 
             //足回り用の通信
             MakeDataCobs(MOVE, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
@@ -80,13 +80,13 @@ int main()
             printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
 
             //放蕩浅海用の通信
-            MakeDataCobs(TURN, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
-            count = SerialWrite(_handle, senddata, 6);
-            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            // MakeDataCobs(TURN, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
+            // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
         }
 
             
-        memset(&cPac, 0, sizeof(cPac));
+        // memset(&cPac, 0, sizeof(cPac));
     }
 
     ControllerClose(_handle_con);
