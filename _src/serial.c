@@ -24,9 +24,9 @@ SERIAL_HANDLE SerialOpen(const char *const dev, uint64_t baudrate)
 
 
     /*ボーレートの設定(入力 = 出力)*/
-    _tio.c_cflag += CREAD;  // 受信有効
-    _tio.c_cflag += CLOCAL; // ローカルライン
-    _tio.c_cflag += CS8;    // データビット:8bit
+    _tio.c_cflag |= CREAD;  // 受信有効
+    _tio.c_cflag |= CLOCAL; // ローカルライン
+    _tio.c_cflag |= CS8;    // データビット:8bit
 
     cfsetispeed(&_tio, baudrate);
     cfsetospeed(&_tio, baudrate);
@@ -48,6 +48,7 @@ void SerialClose(SERIAL_HANDLE handle)
     Serialtable *_table = handle;
 
     close(_table->serial);
+    free(handle);
 }
 
 ssize_t SerialWrite(SERIAL_HANDLE handle, unsigned char *buff, uint8_t size)

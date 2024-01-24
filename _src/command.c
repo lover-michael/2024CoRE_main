@@ -7,12 +7,12 @@ void MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* sen
     memset(senddata, 0, sizeof(senddata));
     
     *senddata = ReturnMessage(button);
-    // if(*senddata != ALERT)
-    // {
-    //     *(senddata + 1) = power >> 7;
-    //     *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
-    //     *(senddata + 3) = movedir;
-    // }
+    if(*senddata != ALERT)
+    {
+        *(senddata + 1) = power >> 7;
+        *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
+        *(senddata + 3) = movedir;
+    }
     
 
     for(uint8_t i = 0;i < (dataSize - 1);i++)
