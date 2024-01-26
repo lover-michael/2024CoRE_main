@@ -1,18 +1,43 @@
 #include "command.h"
 
-void MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint8_t dataSize)
+uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint8_t dataSize)
 {
     uint8_t count = 0, mark = 0;
     uint8_t* cobs = (uint8_t*)malloc(dataSize);
+    static bool flag_alert = false;
+    static uint16_t deccount = 0;
+    
+    if(*(senddata + 7) == 0xAA && button > 30) 
+        button = MOVE;
+    else if(*(senddata + 7) == 0xAB && button > 30)
+        button = TURN;
+
     memset(senddata, 0, sizeof(senddata));
     
     *senddata = ReturnMessage(button);
-    if(*senddata != ALERT)
+    if(*senddata != ALERT && flag_alert == false)
     {
+        if(*senddata == STOP)
+        {
+            deccount += 10;
+            if(deccount > power)
+                deccount = power;
+            power -= deccount;        
+        }
+        else
+            deccount = 0;
+
         *(senddata + 1) = power >> 7;
         *(senddata + 2) = ((power << 1) & 0xFE) | ((movedir >> 8) & 0x01);
         *(senddata + 3) = movedir;
     }
+    else if(*senddata == ALERT)
+    {
+        flag_alert = true;
+        return 0;
+    }
+    else if(*senddata == FINE)
+        flag_alert = false;
     
 
     for(uint8_t i = 0;i < (dataSize - 1);i++)
@@ -37,14 +62,13 @@ void MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* sen
     memcpy(senddata, cobs, sizeof(cobs));
     free(cobs);
 
-    return;
+    return 1;
 }
 
 uint8_t ReturnMessage(uint8_t num)
 {
     uint8_t msg[] = { TURN, FINE, ALERT, HELLO, STOP, MOVE };
-    static bool pathButton[] = {0, 0, 0, 0, 0, 0};
-
+    
     if(num == SELECT)
         return msg[1];
     else if(num == START)
