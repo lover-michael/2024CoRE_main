@@ -12,31 +12,21 @@ int main()
     uint8_t senddata[100];
     uint8_t MessID_H = 0;
     uint8_t hijou = 0;
+    uint8_t numM = 0;
     bool flagHijou = true;
     ssize_t count = 0;
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
-    SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
-
-    // while (1)
-    // {
-    //     senddata[0] =2;
-    //     senddata[1] =0xff;
-    //     senddata[2] =0;
-    //     count = SerialWrite(_handle, senddata, 3);
-    //     printf("Send %x %x %x \n",senddata[0], senddata[1], senddata[2]);//, senddata[3], senddata[4], senddata[5]);
-    //     sleep(1);
-    // }
-    
+    // SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
     //コントローラーの接続を確認する
     do{
         ControllerRead(_handle_con, &cPac);
-        if(cPac.button == 10)
+        if(cPac.button == PS)
         {
-            MakeDataCobs(0, 0, 0, senddata, 6);
-            count = SerialWrite(_handle, senddata, 6);
+            numM = MakeDataCobs(0, 0, 0, senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
             printf("%ld\n", count);
             for(int i = 0;i < 10000;i++)
             {
@@ -46,7 +36,7 @@ int main()
                 }
             }
         }
-    }while(cPac.button != 10);
+    }while(cPac.button != PS);
 
     memset(&cPac, 0, sizeof(cPac));
 
@@ -57,8 +47,8 @@ int main()
         if(count < 0)
         {
             MessID_H = ALERT;
-            MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
-            count = SerialWrite(_handle, senddata, 6);
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            // count = SerialWrite(_handle, senddata, 6);
             printf("%ld\n", count);
             hijou++;
             if(hijou > 50)
@@ -66,31 +56,37 @@ int main()
         }
         else
         {    
-            //遠隔非常停止等を指示する通信
-            // senddata[0] =2;
-            // senddata[1] =0xff;
-            // senddata[2] =0;
-            // MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 3);
-            // count = SerialWrite(_handle, senddata, 3);
-            // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            
+            //非常停止等用
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 3);
+            if(numM == 0)
+            {
+                // count = SerialWrite(_handle, senddata, 3);
+                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            }
 
-            //足回り用の通信
-            MakeDataCobs(MOVE, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
-            count = SerialWrite(_handle, senddata, 6);
-            printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            // 足回り用の通信
+            senddata[7] = 0xAA;
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
+            if(numM != 0)
+            {
+                // count = SerialWrite(_handle, senddata, 6);
+                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            }
 
             //放蕩浅海用の通信
-            // MakeDataCobs(TURN, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
-            // count = SerialWrite(_handle, senddata, 6);
-            // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
-        }
-
-            
-        // memset(&cPac, 0, sizeof(cPac));
+            senddata[7] = 0xAB;
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            if(numM != 0)
+            {
+                // count = SerialWrite(_handle, senddata, 6);
+                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            }
+        }            
     }
 
     ControllerClose(_handle_con);
-    SerialClose(_handle);
+    // SerialClose(_handle);
 
     return 0;
 }
