@@ -39,11 +39,10 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     {
         case JS_EVENT_BUTTON:
         {
-            if((EVENT.value ? "pressed" : "released") == "pressed"){
+            if((EVENT.value ? "pressed" : "released") == "pressed")
                 _cntPkt->button = EVENT.number;
-                if(_cntPkt->button == RIGHT_T || _cntPkt->button == LEFT_T)
-                    _cntPkt->trigger_value[(_cntPkt->button - 8) ? RIGHT : LEFT] = EVENT.value;
-            }
+            else if((EVENT.value ? "pressed" : "released") == "released")
+                _cntPkt->button = EVENT.number + 30;
         }
         case JS_EVENT_AXIS:
         {
@@ -72,13 +71,13 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                     flag_axis[LEFT] = true;
             }
 
-            if(EVENT.number == 2 || EVENT.number == 3)
+            if(EVENT.number == 3 || EVENT.number == 4)
             {
-                axis[RIGHT][(EVENT.number - 2) ? X_AXIS : Y_AXIS ] = EVENT.value / 4.0;
+                axis[RIGHT][(EVENT.number - 3) ? X_AXIS : Y_AXIS ] = EVENT.value / 4.0;
 
                 if(flag_axis[RIGHT] == true)
                 {
-                    _cntPkt->stick_value[RIGHT] = (sqrt(axis[RIGHT][X_AXIS] * axis[RIGHT][X_AXIS] + axis[RIGHT][Y_AXIS] * axis[RIGHT][Y_AXIS]))*2 - 100;
+                    _cntPkt->stick_value[RIGHT] = (sqrt(axis[RIGHT][X_AXIS] * axis[RIGHT][X_AXIS] + axis[RIGHT][Y_AXIS] * axis[RIGHT][Y_AXIS]))*2 - 1000;
 
                     if(_cntPkt->stick_value[RIGHT] > 16200)
                         _cntPkt->stick_value[RIGHT] = 16200;
@@ -89,10 +88,8 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                         ang += 360;
                     
                     _cntPkt->stick_angle[RIGHT] = ang;
-
-                    // printf("v: %d a: %f\n", _cntPkt->stick_value[RIGHT], ang);
-
-                    memset(axis, 0, 2);
+                    
+                    memset(axis, 0, 4);
                     flag_axis[RIGHT] = false;
                 }
                 else

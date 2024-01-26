@@ -1,5 +1,6 @@
-#ifndef PS3CONTROLLER_H
-#define PS3CONTROLLER_H
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+#define PS5                     //コントローラーの製品をここで指定してください
 
 #include <stdio.h>
 #include <stdint.h>
@@ -13,23 +14,11 @@
 #include <linux/joystick.h>
 #include <math.h>
 
-#define MARU_B 13
-#define SANKAKU_B 12
-#define BATU_B 14
-#define SIKAKU_B 15
-#define UP_B 4
-#define LEFT_B 7
-#define DOWN_B 6
-#define RIGHT_B 5
-#define LEFT_1 10
-#define LEFT_T 8
-#define RIGHT_1 11
-#define RIGHT_T 9
-#define LEFT_S_PUSH 1
-#define RIGHT_S_PUSH 2
-#define START 3
-#define SELECT 0
-#define PS 16
+#ifdef PS5
+    #include "dualsense.h"
+#elif PS3
+    #include "dualshock3.h"
+#endif
 
 #define M_PI 3.14159265358979323846
 
