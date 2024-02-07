@@ -19,7 +19,7 @@ int main()
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
-    // SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
+    SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
     //コントローラーの接続を確認する
     do{
@@ -27,7 +27,7 @@ int main()
         if(cPac.button == PS)
         {
             numM = MakeDataCobs(0, 0, 0, senddata, 6);
-            // count = SerialWrite(_handle, senddata, 6);
+            count = SerialWrite(_handle, senddata, 6);
             printf("%ld\n", count);
             for(int i = 0;i < 10000;i++)
             {
@@ -49,7 +49,7 @@ int main()
         {
             MessID_H = ALERT;
             numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
-            // count = SerialWrite(_handle, senddata, 6);
+            count = SerialWrite(_handle, senddata, 6);
             printf("%ld\n", count);
             hijou++;
             if(hijou > 50)
@@ -62,7 +62,7 @@ int main()
             numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 3);
             if(numM == 0)
             {
-                // count = SerialWrite(_handle, senddata, 3);
+                count = SerialWrite(_handle, senddata, 3);
                 printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
             }
 
@@ -71,8 +71,8 @@ int main()
             numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 6);
             if(numM != 0)
             {
-                // count = SerialWrite(_handle, senddata, 6);
-                // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+                count = SerialWrite(_handle, senddata, 6);
+                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
             }
 
             //放蕩浅海用の通信
@@ -87,7 +87,7 @@ int main()
     }
 
     ControllerClose(_handle_con);
-    // SerialClose(_handle);
+    SerialClose(_handle);
 
     return 0;
 }
