@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <math.h>
 
 #ifdef PS5
     #include "dualsense.h"
@@ -53,16 +54,5 @@ uint8_t ReturnMessage(uint8_t num);
  * @param ... 
  */
 void MakeByte(uint8_t* senddata, uint16_t arg_1, ...);
-
-//送信データ構造(USBtoCANと同じにします...)//
-/*
- *                                              Packet
- * *************************|*************************|**************************|**************************|
- *                          |                         |                          |                          |
- *      MassageID:8bit      |    PayloadSize:8bit     | Payload:8bit*PayloadSize |      ChecKSum:8bit       |
- *                          |         (Max12)         |                          | (Only when have Payload) |
- * *************************|*************************|**************************|**************************|
- * 
- */
 
 #endif
