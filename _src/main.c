@@ -15,6 +15,7 @@ int main()
     uint8_t numM = 0;
     bool flagHijou = true;
     ssize_t count = 0;
+    uint16_t kakunin = 0;
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
@@ -71,17 +72,17 @@ int main()
             if(numM != 0)
             {
                 // count = SerialWrite(_handle, senddata, 6);
-                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+                // printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
             }
 
             //放蕩浅海用の通信
-            senddata[7] = 0xAB;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
-            if(numM != 0)
-            {
-                // count = SerialWrite(_handle, senddata, 6);
-                printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
-            }
+            // senddata[7] = 0xAB;
+            // numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 6);
+            // if(numM != 0)
+            // {
+            //     count = SerialWrite(_handle, senddata, 6);
+            //     printf("%x %x %x %d %d %d\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5]);
+            // }
         }            
     }
 
