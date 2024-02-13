@@ -5,9 +5,9 @@
 
 uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint8_t dataSize)
 {
-    uint8_t count = 0, mark = 0, dir = 0;
+    uint8_t count = 0, mark = 0, dir = 0, pbutton = button;
     int32_t m_pow[4] = {0, 0, 0, 0};
-    uint8_t* cobs = (uint8_t*)malloc(dataSize);
+    uint8_t* cobs = (uint8_t*)malloc(dataSize + 2);
     static bool flag_alert = false;
     
     if(*(senddata + 7) == 0xAA && button > 30) 
@@ -15,12 +15,12 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     else if(*(senddata + 7) == 0xAB && button > 30)
         button = TURN;
 
-    memset(senddata, 0, sizeof(senddata));
+    memset(senddata, 0, dataSize + 2);
     
     *senddata = ReturnMessage(button);
     if(*senddata == MOVE && flag_alert != true)
     {
-        m_pow[0] = POWER(power, movedir, power);
+        m_pow[0] = POWER(power, movedir, power) * 0.01;
         m_pow[1] = POWER(power, movedir, -power);
         m_pow[2] = POWER(-power, movedir, power);
         m_pow[3] = POWER(-power, movedir, -power);
@@ -28,20 +28,22 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
         for(int i = 0;i < 4;i++)
         {
             if(m_pow[i] >= 0)
-                dir |= 0;
+                dir += 0;
             else if(m_pow[i] < 0)
             {
-                dir |= (1 << i);
-                m_pow[i] *= (-1);
+                dir += (0b00000001 << i);
+                // m_pow[i] = m_pow[i] * -1;
             }
 
             if(m_pow[i] > 32000)
                 m_pow[i] = 32000;
 
-            *(senddata + (1 + 2 * i)) = m_pow[i] >> 7;
-            *(senddata + (2 + 2 * i)) = m_pow[i];
+            // *(senddata + (1 + 2 * i)) = m_pow[i] >> 8;
+            // *(senddata + (2 + 2 * i)) = m_pow[i] & 0xFF;
+            *(senddata + (1 + 2 * i)) = 100;
+            *(senddata + (2 + 2 * i)) = 0;
         }
-        *(senddata + 10) = dir;
+        *(senddata + 9) = 0;
     }
     else if(*senddata == TURN && flag_alert != true)
     {
@@ -51,20 +53,23 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
         for(int i = 0;i < 2;i++)
         {
             if(m_pow[i] >= 0)
-                dir |= 0;
+                dir += 0;
             else if(m_pow[i] < 0)
             {
-                dir |= (1 << i);
-                m_pow[i] *= (-1);
+                dir += (0b00000001 << i);
+                // m_pow[i] = m_pow[i] * -1;
             }
 
             if(m_pow[i] > 320)
                 m_pow[i] = 320;
 
-            *(senddata + (1 + 2 * i)) = m_pow[i] >> 7;
-            *(senddata + (2 + 2 * i)) = m_pow[i];
+            *(senddata + (1 + 2 * i)) = m_pow[i] >> 8;
+            *(senddata + (2 + 2 * i)) = m_pow[i] & 0xFF;
         }
         *(senddata + 5) = dir;
+
+        if(pbutton == LEFT_T)
+            *(senddata + 6) = 0xFF;
     }
     else if(*senddata == ALERT)
     {
@@ -75,7 +80,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
         flag_alert = false;
     
 
-    for(uint8_t i = 0;i < (dataSize - 1);i++)
+    for(uint8_t i = 0;i < dataSize;i++)
     {
         if(*(senddata + i) != 0x00)
         {
@@ -94,7 +99,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     *(cobs + mark) = count;
     *(cobs + (dataSize + 1)) = 0x00;
 
-    memcpy(senddata, cobs, sizeof(cobs));
+    memcpy(senddata, cobs, dataSize + 2);
     free(cobs);
 
     return 1;

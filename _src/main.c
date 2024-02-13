@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 
 #include "serial.h"
 #include "controller.h"
@@ -59,30 +61,37 @@ int main()
         {    
             
             //非常停止等用
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 13);
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 1);
             if(numM == 0)
             {
                 count = SerialWrite(_handle, senddata, 3);
-                // printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
+                printf("%x %x %x\n",senddata[0], senddata[1], senddata[2]);
             }
 
             // 足回り用の通信
             senddata[7] = 0xAA;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 12);
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 10);
             if(numM != 0)
             {
                 count = SerialWrite(_handle, senddata, 12);
-                // printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
+                printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
+            }
+            for(int i = 0;i < 1000;i++)
+            {
+                for(int j = 0;j < 100;)
+                {
+                    j++;
+                }
             }
 
             //放蕩浅海用の通信
-            senddata[7] = 0xAB;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 12);
-            if(numM != 0)
-            {
-                count = SerialWrite(_handle, senddata, 12);
-                // printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
-            }
+            // senddata[7] = 0xAB;
+            // numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 7);
+            // if(numM != 0)
+            // {
+            //     count = SerialWrite(_handle, senddata, 9);
+            //     printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
+            // }
         }            
     }
 
