@@ -24,8 +24,8 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
 #define ALERT 0xEE
 #define FINE 0xEF
 #define TURN 0x55
-
-#define MS_TERMINAL 0x5A
+#define SHOT_S 0xAA
+#define SHOT_L 0xAB
 
 /**
  * @brief 

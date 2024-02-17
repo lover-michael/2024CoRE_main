@@ -12,12 +12,9 @@ int main()
     const char _dev_bord[] = "/dev/ttyUSB0";
     
     uint8_t senddata[100];
-    uint8_t MessID_H = 0;
     uint8_t hijou = 0;
     uint8_t numM = 0;
-    bool flagHijou = true;
     ssize_t count = 0;
-    uint16_t kakunin = 0;
 
     controllerPac cPac;
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
@@ -49,50 +46,57 @@ int main()
 
         if(count < 0)
         {
-            MessID_H = ALERT;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 12);
+            numM = MakeDataCobs(START, cPac.stick_value[0], cPac.stick_angle[0], senddata, 12);
             count = SerialWrite(_handle, senddata, 12);
-            printf("%ld\n", count);
+            if(count < 0)
+                break;
             hijou++;
-            if(hijou > 50)
+            if(hijou > 30)
                 break;
         }
-        else
-        {    
-            
-            //非常停止等用
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 1);
-            if(numM == 0)
+        //非常停止等用
+        numM = MakeDataCobs(cPac.button, 0, 0, senddata, 1);
+        if(numM == 0)
+        {
+            count = SerialWrite(_handle, senddata, 3);
+            printf("%x %x %x\n",senddata[0], senddata[1], senddata[2]);
+            for(int i = 0;i < 500;i++)
             {
-                count = SerialWrite(_handle, senddata, 3);
-                printf("%x %x %x\n",senddata[0], senddata[1], senddata[2]);
-            }
-
-            // 足回り用の通信
-            senddata[7] = 0xAA;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 10);
-            if(numM != 0)
-            {
-                count = SerialWrite(_handle, senddata, 12);
-                printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
-            }
-            for(int i = 0;i < 1000;i++)
-            {
-                for(int j = 0;j < 100;)
+                for(int j = 0;j < 390;)
                 {
                     j++;
                 }
             }
+        }
 
-            //放蕩浅海用の通信
-            // senddata[7] = 0xAB;
-            // numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 7);
-            // if(numM != 0)
-            // {
-            //     count = SerialWrite(_handle, senddata, 9);
-            //     printf("%x %x %d %d %d %d %d %d\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6] + senddata[7], senddata[8] + senddata[9], senddata[10], senddata[11]);
-            // }
-        }            
+        // 足回り用の通信
+        senddata[7] = 0xAA;
+        numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 10);
+        if(numM != 0)
+        {
+            printf("%d %x %d %d %d %d %d %d %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6], senddata[7], senddata[8], senddata[9], senddata[10], senddata[11]);
+            count = SerialWrite(_handle, senddata, 12);
+            if(count < 0)
+                hijou++;
+            for(int i = 0;i < 500;i++)
+            {
+                for(int j = 0;j < 390;)
+                {
+                    j++;
+                }
+            }
+        }
+        memset(senddata, 0, 12);
+
+        //放蕩浅海用の通信
+        // senddata[7] = 0xAB;
+        // numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 8);
+        // if(numM != 0)
+        // {
+        //     count = SerialWrite(_handle, senddata, 10);
+        //     printf("%x %x %d %d %x %x %x %x\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6], senddata[7], senddata[8], senddata[9]);
+            
+        // }
     }
 
     ControllerClose(_handle_con);

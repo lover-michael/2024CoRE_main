@@ -41,7 +41,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
         {
             if((EVENT.value ? "pressed" : "released") == "pressed")
                 _cntPkt->button = EVENT.number;
-            else if((EVENT.value ? "pressed" : "released") == "released")
+            else
                 _cntPkt->button = EVENT.number + 30;
         }
         case JS_EVENT_AXIS:
@@ -54,7 +54,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                 {
                     _cntPkt->stick_value[LEFT] = (sqrt(axis[LEFT][X_AXIS] * axis[LEFT][X_AXIS] + axis[LEFT][Y_AXIS] * axis[LEFT][Y_AXIS]));
                     
-                    if(_cntPkt->stick_value[LEFT]  < 5000)
+                    if(_cntPkt->stick_value[LEFT]  < 3000)
                         _cntPkt->stick_value[LEFT] = 0;  
 
                     double ang = 180 * (atan2(axis[LEFT][Y_AXIS], -axis[LEFT][X_AXIS]) / M_PI);
@@ -79,8 +79,8 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                 {
                     _cntPkt->stick_value[RIGHT] = (sqrt(axis[RIGHT][X_AXIS] * axis[RIGHT][X_AXIS] + axis[RIGHT][Y_AXIS] * axis[RIGHT][Y_AXIS]));
 
-                    if(_cntPkt->stick_value[LEFT]  < 5000)
-                        _cntPkt->stick_value[LEFT] = 0;  
+                    if(_cntPkt->stick_value[RIGHT]  < 5000)
+                        _cntPkt->stick_value[RIGHT] = 0;  
 
                     double ang = 180 * (atan2(axis[RIGHT][Y_AXIS], -axis[RIGHT][X_AXIS]) / M_PI);
                     
@@ -99,8 +99,6 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
         default:
             break;
     }
-
-    return count;
 }
 
 void ControllerClose(PS3_HANDLE handle)
