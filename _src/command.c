@@ -12,7 +12,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     
     if(*(senddata + 7) == 0xAA && button > 30) 
         button = MOVE;
-    else if(*(senddata + 7) == 0xAB)
+    else if(*(senddata + 7) == 0xAB && button > 30)
         button = TURN;
 
     memset(senddata, 0, dataSize + 2);
@@ -73,7 +73,6 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     }
     else if(*senddata == FINE)
         flag_alert = false;
-    
 
     for(uint8_t i = 0;i < dataSize;i++)
     {
@@ -106,7 +105,8 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
 uint8_t ReturnMessage(uint8_t num)
 {
     uint8_t msg[] = { TURN, FINE, ALERT, HELLO, STOP, MOVE, SHOT_L, SHOT_S };
-    
+    static uint8_t pathB = 0;
+
     if(num == SELECT)
         return msg[1];
     else if(num == START)

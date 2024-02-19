@@ -34,7 +34,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     static double axis[2][2] = { {0, 0}, {0, 0} };
     static bool flag_axis[2] = {0, 0};
 
-    while(read(_table->ps3_serial, (&EVENT), sizeof(EVENT)) < 7);
+    read(_table->ps3_serial, (&EVENT), sizeof(EVENT));
     switch (EVENT.type & ~JS_EVENT_INIT)
     {
         case JS_EVENT_BUTTON:
