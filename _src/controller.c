@@ -54,7 +54,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                 {
                     _cntPkt->stick_value[LEFT] = (sqrt(axis[LEFT][X_AXIS] * axis[LEFT][X_AXIS] + axis[LEFT][Y_AXIS] * axis[LEFT][Y_AXIS]));
                     
-                    if(_cntPkt->stick_value[LEFT]  < 3000)
+                    if(_cntPkt->stick_value[LEFT]  <= 2500)
                         _cntPkt->stick_value[LEFT] = 0;  
 
                     double ang = 180 * (atan2(axis[LEFT][Y_AXIS], -axis[LEFT][X_AXIS]) / M_PI);
@@ -79,7 +79,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                 {
                     _cntPkt->stick_value[RIGHT] = (sqrt(axis[RIGHT][X_AXIS] * axis[RIGHT][X_AXIS] + axis[RIGHT][Y_AXIS] * axis[RIGHT][Y_AXIS]));
 
-                    if(_cntPkt->stick_value[RIGHT]  < 5000)
+                    if(_cntPkt->stick_value[RIGHT]  <= 2500)
                         _cntPkt->stick_value[RIGHT] = 0;  
 
                     double ang = 180 * (atan2(axis[RIGHT][Y_AXIS], -axis[RIGHT][X_AXIS]) / M_PI);
@@ -94,6 +94,43 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
                 }
                 else
                     flag_axis[RIGHT] = true;
+            }
+
+            if(EVENT.number == 2 || EVENT.number > 4)
+            {
+                switch (EVENT.number)
+                {
+                    case 2:
+                    {
+                        if(EVENT.value > -30000)
+                            _cntPkt->trigger_value[LEFT] = EVENT.value + 32767;
+                        else
+                            _cntPkt->trigger_value[LEFT] = 0;
+                    }break;
+                    case 5:
+                    {
+                        if(EVENT.value > -30000)
+                            _cntPkt->trigger_value[RIGHT] = EVENT.value + 32767;
+                        else
+                            _cntPkt->trigger_value[RIGHT] = 0;
+                    }break;
+                    case 6:
+                    {
+                        if(EVENT.value != 0 && _cntPkt->button > 30)
+                            _cntPkt->button = ((EVENT.value < 0) ? LEFT_B : RIGHT_B);
+                        else
+                            _cntPkt->button = 31;
+                    }break;
+                    case 7:
+                    {
+                        if(EVENT.value != 0 && _cntPkt->button > 30)
+                            _cntPkt->button = ((EVENT.value < 0) ? UP_B : DOWN_B);
+                        else
+                            _cntPkt->button = 31;
+                    }break;
+                    default:
+                        break;
+                }
             }
         }
         default:
