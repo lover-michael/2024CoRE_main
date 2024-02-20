@@ -20,14 +20,14 @@ int main()
     PS3_HANDLE _handle_con = ConttrollerOpen(_dev_cnt);
     SERIAL_HANDLE _handle = SerialOpen(_dev_bord, B115200);
 
-
     // while(1)
     // {
-    //     senddata[0] = 2;
-    //     senddata[1] = 0xFF;
-    //     senddata[2] = 0;
-    //     SerialWrite(_handle, senddata, 3);
-    //     sleep(1);
+    //     ControllerRead(_handle_con, &cPac);
+    //     printf("button -> %d  ", cPac.button);
+    //     printf("Lstick -> %d  ", cPac.stick_value[1]);
+    //     printf("Rstick -> %d  ", cPac.stick_value[0]);
+    //     printf("LTvakue -> %d  ", cPac.trigger_value[1]);
+    //     printf("RTvakue -> %d\n", cPac.trigger_value[0]);
     // }
 
     //コントローラーの接続を確認する

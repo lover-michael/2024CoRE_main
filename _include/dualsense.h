@@ -5,10 +5,10 @@
 #define SANKAKU_B 2
 #define BATU_B 0
 #define SIKAKU_B 3
-// #define UP_B 4
-// #define LEFT_B 7
-// #define DOWN_B 6
-// #define RIGHT_B 5
+#define UP_B 13
+#define LEFT_B 14
+#define DOWN_B 15
+#define RIGHT_B 16
 #define LEFT_1 4
 #define LEFT_T 6
 #define RIGHT_1 5

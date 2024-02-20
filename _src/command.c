@@ -20,10 +20,10 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     *senddata = ReturnMessage(button);
     if(*senddata == MOVE && flag_alert != true)
     {
-        m_pow[0] = POWER(power, movedir, power);
-        m_pow[1] = POWER(power, movedir, -power);
-        m_pow[2] = POWER(-power, movedir, -power);
-        m_pow[3] = POWER(-power, movedir, power);
+        m_pow[0] = POWER(power, movedir, power) * 0.02;
+        m_pow[1] = POWER(power, movedir, -power) * 0.02;
+        m_pow[2] = POWER(-power, movedir, -power) * 0.03;
+        m_pow[3] = POWER(-power, movedir, power) * 0.03;
     
         for(int i = 0;i < 4;i++)
         {
@@ -61,7 +61,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
         }
         *(senddata + 5) = dir;
 
-        if(pbutton == LEFT_T)
+        if(pbutton == LEFT_1)
             *(senddata + 6) = 0xFF;
         
         *(senddata + 7) = ReturnMessage(pbutton);
