@@ -35,7 +35,7 @@ int main()
         ControllerRead(_handle_con, &cPac);
         if(cPac.button == PS)
         {
-            numM = MakeDataCobs(cPac.button, 0, 0, senddata, 1);
+            numM = MakeDataCobs(cPac.button, 0, 0, senddata);
             count = SerialWrite(_handle, senddata, 3);
             printf("%ld\n", count);
             for(int i = 0;i < 10000;i++)
@@ -53,48 +53,39 @@ int main()
     while(1)
     {
         count = ControllerRead(_handle_con, &cPac);
-
-        if(count < 0)
+        
+        if(count > 0)
         {
-            numM = MakeDataCobs(START, cPac.stick_value[0], cPac.stick_angle[0], senddata, 12);
-            count = SerialWrite(_handle, senddata, 12);
+            senddata[7] = 0xAA;
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+            printf("%d %x %d %d %d %d %d %d %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6], senddata[7], senddata[8], senddata[9], senddata[10], senddata[11]);
+            count = SerialWrite(_handle, senddata, numM);
+            if(count < 0)
+                continue;
+            else
+            {
+            //放蕩浅海用の通信
+                senddata[7] = 0xAB;
+                numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+                if(numM == 1)
+                {
+                    count = SerialWrite(_handle, senddata, numM);
+                    printf("%x %x %d %d %x %x %x %x\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6], senddata[7], senddata[8], senddata[9]);
+                    
+                }
+            }
+        }
+
+        else
+        {
+            numM = MakeDataCobs(START, cPac.stick_value[0], cPac.stick_angle[0], senddata);
+            count = SerialWrite(_handle, senddata, numM);
             if(count < 0)
                 break;
             hijou++;
             if(hijou > 30)
                 break;
         }
-        //非常停止等用
-        numM = MakeDataCobs(cPac.button, 0, 0, senddata, 1);
-        if(numM == 0)
-        {
-            count = SerialWrite(_handle, senddata, 3);
-            printf("%x %x %x\n",senddata[0], senddata[1], senddata[2]);
-            if(count < 0)
-                hijou++;            
-        }
-
-        // 足回り用の通信
-        senddata[7] = 0xAA;
-        numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, 10);
-        if(numM == 1)
-        {
-            printf("%d %x %d %d %d %d %d %d %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6], senddata[7], senddata[8], senddata[9], senddata[10], senddata[11]);
-            count = SerialWrite(_handle, senddata, 12);
-            if(count < 0)
-                hijou++;
-        }
-        // memset(senddata, 0, 12);
-
-        //放蕩浅海用の通信
-        // senddata[7] = 0xAB;
-        // numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, 8);
-        // if(numM == 1)
-        // {
-        //     count = SerialWrite(_handle, senddata, 10);
-        //     printf("%x %x %d %d %x %x %x %x\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6], senddata[7], senddata[8], senddata[9]);
-            
-        // }
     }
 
     ControllerClose(_handle_con);

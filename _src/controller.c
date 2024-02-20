@@ -34,7 +34,14 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
     static double axis[2][2] = { {0, 0}, {0, 0} };
     static bool flag_axis[2] = {0, 0};
 
-    read(_table->ps3_serial, (&EVENT), sizeof(EVENT));
+    count = read(_table->ps3_serial, (&EVENT), sizeof(EVENT));
+
+    if(count < 0)
+    {
+        perror("Read Failed\n");
+        return -1;
+    }
+
     switch (EVENT.type & ~JS_EVENT_INIT)
     {
         case JS_EVENT_BUTTON:
@@ -136,6 +143,8 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
         default:
             break;
     }
+
+    return count;
 }
 
 void ControllerClose(PS3_HANDLE handle)

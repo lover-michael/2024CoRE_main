@@ -26,6 +26,7 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
 #define TURN 0x55
 #define SHOT_S 0xAA
 #define SHOT_L 0xAB
+#define START_SHOT 0xCC
 
 /**
  * @brief 
@@ -34,9 +35,8 @@ typedef uint8_t (*CheckCB)(uint8_t*, uint8_t);
  * @param power 
  * @param movedir 
  * @param senddata You should prepere larger number of senddata than the data that you want to send
- * @param dataSize is that the data you wanna send is added 2
  */
-uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint8_t dataSize);
+uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* senddata, uint16_t* turnpow);
 
 /**
  * @brief 
