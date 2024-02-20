@@ -80,7 +80,7 @@ ssize_t ControllerRead(PS3_HANDLE handle, controllerPac* _cntPkt)
 
             if(EVENT.number == 3 || EVENT.number == 4)
             {
-                axis[RIGHT][(EVENT.number - 3) ? X_AXIS : Y_AXIS ] = EVENT.value;
+                axis[RIGHT][(EVENT.number < 4) ? X_AXIS : Y_AXIS ] = EVENT.value;
 
                 if(flag_axis[RIGHT] == true)
                 {

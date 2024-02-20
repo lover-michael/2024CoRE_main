@@ -11,7 +11,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     
     static bool flag_alert = false;
     
-    if(*(senddata + 7) == 0xAA && (button == RIGHT_T || button == LEFT_T)) 
+    if(*(senddata + 7) == 0xAA) 
     {
         if(button == RIGHT_1)
             tpow = *turnpow;
@@ -20,10 +20,10 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
         button = MOVE;
         dataSize = 10;
     }
-    else if(*(senddata + 7) == 0xAB && (button == LEFT_1 || button == RIGHT_1))
+    else if(*(senddata + 7) == 0xAB)
     {
         button = TURN;
-        dataSize = 8;
+        dataSize = 7;
     }
     memset(senddata, 0, dataSize + 2);
 
@@ -42,7 +42,6 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
                 dir += (1 << i);
                 m_pow[i] = m_pow[i] * -1;
             }
-
             *(senddata + (1 + 2 * i)) = m_pow[i] >> 8;
             *(senddata + (2 + 2 * i)) = m_pow[i] & 0xFF;
         }
@@ -50,8 +49,8 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     }
     else if(*senddata == TURN && flag_alert != true)
     {
-        m_pow[0] = power*sin((float)movedir * M_PI / 180.0) * 0.01;
-        m_pow[1] = power*cos((float)movedir * M_PI / 180.0) * 0.01;
+        m_pow[0] = power*sin((float)movedir * M_PI / 180.0) * 0.05;
+        m_pow[1] = power*cos((float)movedir * M_PI / 180.0) * 0.05;
 
         for(int i = 0;i < 2;i++)
         {
@@ -70,11 +69,11 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
             *(senddata + 6) = ReturnMessage(pbutton);
     }
     else if(*senddata == ALERT)
-    {
         flag_alert = true;
-    }
     else if(*senddata == FINE)
         flag_alert = false;
+    else if(*senddata == 0xBB)
+        return 0xff;
 
     uint8_t* cobs = (uint8_t*)malloc(dataSize + 2);
 
@@ -101,7 +100,7 @@ uint8_t MakeDataCobs(uint8_t button, uint16_t power, uint16_t movedir, uint8_t* 
     *(cobs + (dataSize + 1)) = 0x00;
 
     memcpy(senddata, cobs, dataSize + 2);
-    dataSize = sizeof(cobs);
+    dataSize += 2;
     free(cobs);
 
     return dataSize;
@@ -130,6 +129,8 @@ uint8_t ReturnMessage(uint8_t num)
         return msg[7];
     else if(num == MARU_B)
         return msg[8];
+    else
+        return 0xBB;
 }
 
 // void MakeByte(uint8_t* senddata, uint16_t arg_1, ...)
@@ -147,3 +148,24 @@ uint8_t ReturnMessage(uint8_t num)
 
 //     va_end(ap);
 // }
+
+int msleep(long msec)
+{
+    struct timespec ts;
+    int res;
+
+    if (msec < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    ts.tv_sec = msec / 1000;
+    ts.tv_nsec = (msec % 1000) * 1000000;
+
+    do {
+        res = nanosleep(&ts, &ts);
+    } while (res && errno == EINTR);
+
+    return res;
+}

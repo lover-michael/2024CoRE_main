@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <time.h>
+#include <sys/time.h>
+#include <errno.h>
 
 #ifdef PS5
     #include "dualsense.h"
@@ -54,5 +57,13 @@ uint8_t ReturnMessage(uint8_t num);
  * @param ... 
  */
 void MakeByte(uint8_t* senddata, uint16_t arg_1, ...);
+
+/**
+ * @brief マイクロスリープ用関数
+ * 
+ * @param msec 
+ * @return int 
+ */
+int msleep(long msec);
 
 #endif

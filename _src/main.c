@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
 
 #include "serial.h"
 #include "controller.h"
@@ -35,7 +33,7 @@ int main()
         ControllerRead(_handle_con, &cPac);
         if(cPac.button == PS)
         {
-            numM = MakeDataCobs(cPac.button, 0, 0, senddata);
+            numM = MakeDataCobs(cPac.button, 0, 0, senddata, cPac.trigger_value);
             count = SerialWrite(_handle, senddata, 3);
             printf("%ld\n", count);
             for(int i = 0;i < 10000;i++)
@@ -56,36 +54,57 @@ int main()
         
         if(count > 0)
         {
+            memset(senddata, 0, 12);
+
+            if(cPac.button < 30)
+            {
+                numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, cPac.trigger_value);
+                printf("%x %x %x\n",senddata[0], senddata[1], senddata[2]);
+                if(numM != 0xff){
+                    count = SerialWrite(_handle, senddata, numM);
+                    if(count < 0){ 
+                        hijou++;
+                        continue;
+                    }
+                }
+                // msleep(10);            
+            }
+
+            // ControllerRead(_handle_con, &cPac);
+
             senddata[7] = 0xAA;
-            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata);
+            numM = MakeDataCobs(cPac.button, cPac.stick_value[1], cPac.stick_angle[1], senddata, cPac.trigger_value);
             printf("%d %x %d %d %d %d %d %d %d %d %d %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6], senddata[7], senddata[8], senddata[9], senddata[10], senddata[11]);
             count = SerialWrite(_handle, senddata, numM);
-            if(count < 0)
+            // msleep(10);
+
+            if(count < 0){ 
+                hijou++;
                 continue;
+            }
+
             else
-            {
-            //放蕩浅海用の通信
+            {//放蕩浅海用の通信
+                // ControllerRead(_handle_con, &cPac);
+
                 senddata[7] = 0xAB;
-                numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata);
-                if(numM == 1)
-                {
-                    count = SerialWrite(_handle, senddata, numM);
-                    printf("%x %x %d %d %x %x %x %x\n",senddata[0], senddata[1], senddata[2] + senddata[3], senddata[4] + senddata[5], senddata[6], senddata[7], senddata[8], senddata[9]);
-                    
+                numM = MakeDataCobs(cPac.button, cPac.stick_value[0], cPac.stick_angle[0], senddata, cPac.trigger_value);
+                printf("%x %x %d %d %x %x %x %x %x\n",senddata[0], senddata[1], senddata[2], senddata[3], senddata[4], senddata[5], senddata[6], senddata[7], senddata[8]);
+                count = SerialWrite(_handle, senddata, numM);
+                // msleep(10);
+                if(count < 0){ 
+                    hijou++; 
+                    continue; 
                 }
             }
         }
-
         else
         {
-            numM = MakeDataCobs(START, cPac.stick_value[0], cPac.stick_angle[0], senddata);
-            count = SerialWrite(_handle, senddata, numM);
-            if(count < 0)
-                break;
             hijou++;
             if(hijou > 30)
                 break;
         }
+        msleep(10);
     }
 
     ControllerClose(_handle_con);
